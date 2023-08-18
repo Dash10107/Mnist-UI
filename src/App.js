@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-function App() {
+const App = () => {
+  const [image, setImage] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+
+  const handleImageChange = (event) => {
+    setImage(event.target.files[0]);
+  };
+
+  const handlePredict = async () => {
+    const formData = new FormData();
+    formData.append('file', image);
+
+    try {
+      const response = await axios.post('https://mnistbackend.onrender.com/predict', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setPrediction(response.data.prediction);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Simple MNIST Digit Recognition</h1>
+      <input type="file" onChange={handleImageChange} />
+      <button onClick={handlePredict}>Predict</button>
+      {prediction !== null && <p>Prediction: {prediction}</p>}
     </div>
   );
-}
+};
 
 export default App;
