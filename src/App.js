@@ -12,16 +12,37 @@ const App = () => {
   const handlePredict = async () => {
     const formData = new FormData();
     formData.append('file', image);
-
+  
     try {
-      const response = await axios.post('https://mnistbackend.onrender.com/predict', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await fetch('https://mnistbackend.onrender.com/predict', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }, // Accept JSON response
       });
-      setPrediction(response.data.prediction);
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      setPrediction(data.prediction);
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  
+
+  useEffect(()=>{
+    const getReq = async function (){
+      const response = await axios.get('https://mnistbackend.onrender.com/',  {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      console.log(response)
+    }
+
+    getReq()
+
+  },[])
 
   return (
     <div>
